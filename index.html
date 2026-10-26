@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripWish - Travel Bucket List</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#315c49;--cream:#f7f5ef;--orange:#d88758;--ink:#20352d}
+*{box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+h1,h2,h3,.serif{font-family:'Playfair Display',serif}
+.destination-card{transition:transform .22s,box-shadow .22s}
+.destination-card:hover{transform:translateY(-4px);box-shadow:0 18px 36px #20352d1c}
+.photo-wrap{overflow:hidden}
+.destination-photo{transition:transform .5s}
+.destination-card:hover .destination-photo{transform:scale(1.04)}
+.filter-btn.active{background:var(--green);color:white;border-color:var(--green)}
+.modal-backdrop{background:#12221b99;backdrop-filter:blur(4px)}
+input:focus,select:focus,textarea:focus{outline:2px solid #54856b}
+</style>
+</head>
+<body>
+
+<header class="border-b border-[#e5e3da]">
+<nav class="max-w-7xl mx-auto px-5 sm:px-8 py-5 flex items-center justify-between">
+<a href="#" class="text-2xl font-bold">tripwish<span class="text-[#d88758]">.</span></a>
+<div class="hidden sm:flex gap-7 text-sm font-semibold">
+<a href="#discover">Discover</a>
+<a href="#my-list">My bucket list</a>
+</div>
+<button class="add-btn rounded-full bg-[#315c49] text-white px-5 py-3 text-sm font-semibold">+ Add destination</button>
+</nav>
+</header>
+
+<main>
+<section class="max-w-7xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
+<div class="grid lg:grid-cols-2 gap-12 items-center">
+<div>
+<p class="text-xs uppercase tracking-widest text-[#54715f] mb-6">✳ Your next chapter starts here</p>
+<h1 class="text-5xl sm:text-7xl leading-tight">The world is<br><span class="italic text-[#d88758]">waiting</span> for you.</h1>
+<p class="mt-6 max-w-xl text-lg leading-8 text-[#68776e]">Collect the places that make your heart wander. Plan your journeys, save your memories, and turn your someday list into reality.</p>
+<div class="flex flex-wrap gap-3 mt-8">
+<a href="#my-list" class="rounded-full bg-[#315c49] text-white px-6 py-3">Explore my list ↘</a>
+<button class="add-btn rounded-full border border-[#cfd5ca] bg-white px-6 py-3">+ Add a dream</button>
+</div>
+<div class="flex gap-9 mt-10 pt-7 border-t border-[#e1dfd6]">
+<div><p id="statTotal" class="text-3xl font-bold serif">0</p><p class="text-sm text-gray-500">Dream destinations</p></div>
+<div><p id="statVisited" class="text-3xl font-bold serif">0</p><p class="text-sm text-gray-500">Places explored</p></div>
+<div><p id="statCountries" class="text-3xl font-bold serif">0</p><p class="text-sm text-gray-500">Countries to discover</p></div>
+</div>
+</div>
+<div class="relative">
+<img class="w-full h-[380px] sm:h-[480px] object-cover rounded-[2rem]" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85" alt="Beautiful travel landscape">
+<div class="absolute bottom-5 left-5 text-white">
+<p class="text-xs uppercase tracking-widest">Your personal travel journal</p>
+<p class="serif text-3xl mt-2">Somewhere, someday.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="discover" class="bg-[#eaece3] py-14">
+<div class="max-w-7xl mx-auto px-5 sm:px-8">
+<p class="text-xs uppercase tracking-widest text-[#66806e]">A little inspiration</p>
+<h2 class="text-4xl mt-2 mb-7">Where to next?</h2>
+<div id="suggestions" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+</div>
+</section>
+
+<section id="my-list" class="max-w-7xl mx-auto px-5 sm:px-8 py-16">
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div>
+<p class="text-xs uppercase tracking-widest text-[#66806e]">Your personal collection</p>
+<h2 class="text-4xl mt-2">My bucket list<span class="text-[#d88758]">.</span></h2>
+<p class="text-gray-500 mt-3">Every great journey begins with a wish.</p>
+</div>
+<button class="add-btn rounded-full bg-[#315c49] text-white px-5 py-3">+ Add destination</button>
+</div>
+
+<div class="mt-8 flex flex-col lg:flex-row gap-4 justify-between">
+<input id="searchInput" type="search" placeholder="Search places or countries..." class="w-full lg:max-w-sm rounded-full bg-white border border-[#e2e2d8] px-5 py-3">
+<div class="flex flex-wrap gap-2">
+<button class="filter-btn active border rounded-full px-4 py-2" data-filter="all">All places</button>
+<button class="filter-btn border bg-white rounded-full px-4 py-2" data-filter="planned">Want to go</button>
+<button class="filter-btn border bg-white rounded-full px-4 py-2" data-filter="visited">Visited</button>
+</div>
+</div>
+
+<div id="destinationGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"></div>
+<div id="emptyState" class="hidden text-center py-16">
+<div class="text-4xl">🧭</div>
+<h3 class="text-2xl mt-4">Your next adventure starts here</h3>
+<p class="text-gray-500 mt-2">No destinations found. Add a dream destination!</p>
+<button class="add-btn mt-5 rounded-full bg-[#315c49] text-white px-5 py-3">Add destination</button>
+</div>
+</section>
+</main>
+
+<footer class="bg-[#203b2e] text-white px-5 py-10">
+<div class="max-w-7xl mx-auto flex flex-wrap justify-between gap-5">
+<div><p class="text-2xl font-bold">tripwish<span class="text-[#e5a077]">.</span></p><p class="text-white/60 text-sm mt-2">A little list of places and big dreams.</p></div>
+<p class="text-sm text-white/60">Made for the places you'll go.</p>
+</div>
+</footer>
+
+<div id="destinationModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+<div class="bg-[#fbfaf6] rounded-3xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-6 sm:p-8">
+<div class="flex justify-between items-center">
+<div><p class="text-xs uppercase tracking-widest text-[#66806e]">Make a new memory</p><h2 class="text-3xl mt-2">Add a destination</h2></div>
+<button id="closeModal" class="text-2xl px-3" aria-label="Close">×</button>
+</div>
+<form id="destinationForm" class="mt-6 space-y-4">
+<div><label class="block text-sm font-semibold mb-2" for="placeName">Destination name *</label><input id="placeName" required maxlength="70" placeholder="e.g. Kyoto" class="w-full rounded-xl border px-4 py-3"></div>
+<div><label class="block text-sm font-semibold mb-2" for="countryName">Country *</label><input id="countryName" required maxlength="60" placeholder="e.g. Japan" class="w-full rounded-xl border px-4 py-3"></div>
+<div><label class="block text-sm font-semibold mb-2" for="placeImage">Photo URL (optional)</label><input id="placeImage" type="url" placeholder="https://example.com/photo.jpg" class="w-full rounded-xl border px-4 py-3"></div>
+<div><label class="block text-sm font-semibold mb-2" for="placeNote">Why do you want to go?</label><textarea id="placeNote" maxlength="240" rows="3" placeholder="The food, views, culture..." class="w-full rounded-xl border px-4 py-3"></textarea></div>
+<div><label class="block text-sm font-semibold mb-2" for="placeStatus">Travel status</label><select id="placeStatus" class="w-full rounded-xl border px-4 py-3"><option value="planned">Want to go</option><option value="visited">Already visited</option></select></div>
+<div class="flex gap-3 pt-2">
+<button type="button" id="cancelModal" class="flex-1 rounded-full border px-4 py-3">Cancel</button>
+<button type="submit" class="flex-1 rounded-full bg-[#315c49] text-white px-4 py-3">Save destination</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="toast" class="hidden fixed bottom-5 right-5 z-[60] rounded-xl bg-[#203b2e] text-white px-5 py-3 shadow-xl text-sm"></div>
+
+<script>
+const defaultDestinations=[
+{id:1,name:"Santorini",country:"Greece",image:"https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&w=900&q=80",note:"Whitewashed houses, blue domes, and golden sunsets.",status:"planned"},
+{id:2,name:"Kyoto",country:"Japan",image:"https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=900&q=80",note:"Quiet temples, bamboo forests, and beautiful traditions.",status:"planned"},
+{id:3,name:"Swiss Alps",country:"Switzerland",image:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=900&q=80",note:"Mountain air, scenic trains, and beautiful lakes.",status:"visited"},
+{id:4,name:"Bali",country:"Indonesia",image:"https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80",note:"Green rice terraces and peaceful island mornings.",status:"planned"},
+{id:5,name:"Marrakech",country:"Morocco",image:"https://images.unsplash.com/photo-1539020140153-e479b8c22e70?auto=format&fit=crop&w=900&q=80",note:"Colorful markets, tiled courtyards, and mint tea.",status:"planned"},
+{id:6,name:"Amalfi Coast",country:"Italy",image:"https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=900&q=80",note:"Coastal villages, lemon groves, and sea views.",status:"visited"}
+];
+
+const suggestions=[
+{id:"s1",name:"Cappadocia",country:"Türkiye",image:"https://images.unsplash.com/photo-1570939274717-7eda259b50ed?auto=format&fit=crop&w=900&q=80",note:"Watch sunrise fill the sky with hot-air balloons."},
+{id:"s2",name:"Banff National Park",country:"Canada",image:"https://images.unsplash.com/photo-1503614472-8c93d56cd7b5?auto=format&fit=crop&w=900&q=80",note:"Turquoise lakes and mountain trails in the wild."},
+{id:"s3",name:"Petra",country:"Jordan",image:"https://images.unsplash.com/photo-1579606032821-4e6161c81bd3?auto=format&fit=crop&w=900&q=80",note:"Discover ancient rose-colored architecture carved in stone."}
+];
+
+const storageKey="tripwish-destinations-v1";
+const fallbackImage="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80";
+let destinations=loadDestinations();
+let currentFilter="all";
+let toastTimer;
+
+function loadDestinations(){
+try{
+const saved=localStorage.getItem(storageKey);
+return saved?JSON.parse(saved):defaultDestinations;
+}catch(error){return defaultDestinations;}
+}
+function saveDestinations(){
+try{localStorage.setItem(storageKey,JSON.stringify(destinations));}
+catch(error){showToast("Could not save in this browser.");}
+}
+function escapeHTML(value){
+return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function safeImage(url){
+try{const u=new URL(url);return ["http:","https:"].includes(u.protocol)?u.href:fallbackImage;}
+catch{return fallbackImage;}
+}
+
+function cardTemplate(place,suggestion=false){
+const visited=place.status==="visited";
+return `
+<article class="destination-card bg-white rounded-3xl overflow-hidden border border-[#e9e8e0]">
+<div class="photo-wrap relative h-52">
+<img class="destination-photo w-full h-full object-cover" src="${escapeHTML(safeImage(place.image||fallbackImage))}" alt="${escapeHTML(place.name)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImage}'">
+<span class="absolute top-4 left-4 rounded-full px-3 py-1.5 text-xs font-bold ${visited?"bg-[#e2f0e4] text-[#315c49]":"bg-white/95 text-[#5e6f64]"}">${visited?"✓ Visited":"♡ On my list"}</span>
+</div>
+<div class="p-5">
+<p class="text-xs uppercase tracking-widest text-gray-400 font-bold">${escapeHTML(place.country)}</p>
+<h3 class="text-2xl mt-1">${escapeHTML(place.name)}</h3>
+<p class="text-sm leading-6 text-gray-500 mt-3 min-h-[48px]">${escapeHTML(place.note||"A new place to explore and a new memory to make.")}</p>
+${suggestion
+?`<button class="add-suggestion mt-5 w-full rounded-full border border-[#d4ddd2] py-3 text-sm font-bold hover:bg-[#eef2eb]" data-id="${place.id}">+ Add to my bucket list</button>`
+:`<div class="flex gap-2 mt-5"><button class="toggle-status flex-1 rounded-full ${visited?"bg-[#e8eee6] text-[#315c49]":"bg-[#315c49] text-white"} px-3 py-3 text-sm font-bold" data-id="${place.id}">${visited?"↶ Mark as planned":"✓ Mark as visited"}</button><button class="delete-place w-12 rounded-full border text-xl" data-id="${place.id}" aria-label="Delete destination">×</button></div>`}
+</div></article>`;
+}
+
+function renderSuggestions(){
+document.getElementById("suggestions").innerHTML=suggestions.map(place=>{
+const added=destinations.some(d=>d.name.toLowerCase()===place.name.toLowerCase()&&d.country.toLowerCase()===place.country.toLowerCase());
+return cardTemplate({...place,status:"planned"},true).replace(
+`class="add-suggestion mt-5 w-full rounded-full border border-[#d4ddd2] py-3 text-sm font-bold hover:bg-[#eef2eb]" data-id="${place.id}"`,
+`class="add-suggestion mt-5 w-full rounded-full border border-[#d4ddd2] py-3 text-sm font-bold ${added?"opacity-60":""}" data-id="${place.id}" ${added?"disabled":""}`
+).replace("+ Add to my bucket list",added?"✓ Already on your list":"+ Add to my bucket list");
+}).join("");
+}
+
+function renderDestinations(){
+const query=document.getElementById("searchInput").value.trim().toLowerCase();
+const filtered=destinations.filter(p=>(currentFilter==="all"||p.status===currentFilter)&&`${p.name} ${p.country} ${p.note||""}`.toLowerCase().includes(query));
+document.getElementById("destinationGrid").innerHTML=filtered.map(p=>cardTemplate(p)).join("");
+document.getElementById("emptyState").classList.toggle("hidden",filtered.length>0);
+document.getElementById("statTotal").textContent=destinations.length;
+document.getElementById("statVisited").textContent=destinations.filter(p=>p.status==="visited").length;
+document.getElementById("statCountries").textContent=new Set(destinations.filter(p=>p.status==="planned").map(p=>p.country.toLowerCase())).size;
+renderSuggestions();
+}
+
+function showToast(message){
+const toast=document.getElementById("toast");
+toast.textContent=message;
+toast.classList.remove("hidden");
+clearTimeout(toastTimer);
+toastTimer=setTimeout(()=>toast.classList.add("hidden"),2600);
+}
+function openModal(){
+const modal=document.getElementById("destinationModal");
+modal.classList.remove("hidden");
+modal.classList.add("flex");
+document.getElementById("placeName").focus();
+}
+function closeModal(){
+const modal=document.getElementById("destinationModal");
+modal.classList.add("hidden");
+modal.classList.remove("flex");
+document.getElementById("destinationForm").reset();
+}
+
+document.querySelectorAll(".add-btn").forEach(b=>b.addEventListener("click",openModal));
+document.getElementById("closeModal").addEventListener("click",closeModal);
+document.getElementById("cancelModal").addEventListener("click",closeModal);
+document.getElementById("destinationModal").addEventListener("click",e=>{if(e.target.id==="destinationModal")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+document.getElementById("destinationForm").addEventListener("submit",e=>{
+e.preventDefault();
+const name=document.getElementById("placeName").value.trim();
+const country=document.getElementById("countryName").value.trim();
+const image=document.getElementById("placeImage").value.trim();
+const note=document.getElementById("placeNote").value.trim();
+const status=document.getElementById("placeStatus").value;
+if(!name||!country)return;
+if(destinations.some(p=>p.name.toLowerCase()===name.toLowerCase()&&p.country.toLowerCase()===country.toLowerCase())){
+showToast("That destination is already on your list.");
+return;
+}
+destinations.unshift({id:Date.now(),name,country,image:safeImage(image||fallbackImage),note,status});
+saveDestinations();
+renderDestinations();
+closeModal();
+showToast(name+" added to your bucket list!");
+document.getElementById("my-list").scrollIntoView({behavior:"smooth"});
+});
+
+document.getElementById("searchInput").addEventListener("input",renderDestinations);
+document.querySelectorAll(".filter-btn").forEach(button=>{
+button.addEventListener("click",()=>{
+currentFilter=button.dataset.filter;
+document.querySelectorAll(".filter-btn").forEach(b=>{
+b.classList.toggle("active",b===button);
+b.classList.toggle("bg-white",b!==button);
+});
+renderDestinations();
+});
+});
+
+document.getElementById("destinationGrid").addEventListener("click",e=>{
+const toggle=e.target.closest(".toggle-status");
+const remove=e.target.closest(".delete-place");
+if(toggle){
+const place=destinations.find(p=>String(p.id)===toggle.dataset.id);
+if(!place)return;
+place.status=place.status==="visited"?"planned":"visited";
+saveDestinations();
+renderDestinations();
+showToast(place.name+(place.status==="visited"?" marked as visited!":" moved back to planned."));
+}
+if(remove){
+const place=destinations.find(p=>String(p.id)===remove.dataset.id);
+if(!place)return;
+if(!confirm("Remove "+place.name+" from your bucket list?"))return;
+destinations=destinations.filter(p=>String(p.id)!==remove.dataset.id);
+saveDestinations();
+renderDestinations();
+showToast(place.name+" removed from your list.");
+}
+});
+
+document.getElementById("suggestions").addEventListener("click",e=>{
+const button=e.target.closest(".add-suggestion");
+if(!button||button.disabled)return;
+const place=suggestions.find(p=>p.id===button.dataset.id);
+if(!place)return;
+destinations.unshift({...place,id:Date.now(),status:"planned"});
+saveDestinations();
+renderDestinations();
+showToast(place.name+" added to your bucket list!");
+});
+
+renderDestinations();
+</script>
+</body>
+</html>
